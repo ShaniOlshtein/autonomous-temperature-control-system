@@ -26,7 +26,7 @@ You are the embedded developer for the Cooking Temperature Control project. You 
 - The countdown uses `millis()` and currently decrements once per second while running.
 - The Keyes ADKeyboard resistor ladder is read through ADC GPIO2 with debounced
 	SW1/SW4 navigation and SW2/SW3 value actions.
-- `currentTemp` is read from a DS18B20 on GPIO3 using the `OneWire` and `DallasTemperature` libraries.
+- `currentTemp` is calculated as the average of two DS18B20 sensors on GPIO3 using the `OneWire` and `DallasTemperature` libraries.
 
 ## Engineering rules
 

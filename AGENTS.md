@@ -29,7 +29,7 @@ The sketch currently defines these pins:
 
 - `LCD_BL = 38`
 - `ADKEY_OUT_PIN = 2` for the Keyes ADKeyboard resistor ladder
-- `TEMP_SENSOR_PIN = 3` for the DS18B20 data line
+- `TEMP_SENSOR_PIN = 3` for the shared data line of two DS18B20 sensors
 - GPIO4 is reserved as `LCD_BAT_VOLT` for battery-voltage measurement and must not be used by the sensor.
 
 These should remain aligned with the display and button wiring on the actual board. If the hardware changes, update the sketch and the relevant documentation together.

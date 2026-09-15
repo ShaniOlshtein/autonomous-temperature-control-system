@@ -22,6 +22,7 @@ TFT_eSprite sprCurrent = TFT_eSprite(&tft);
 #define LCD_BL 38
 #define ADKEY_OUT_PIN 2
 #define TEMP_SENSOR_PIN 3
+#define TEMP_SENSOR_COUNT 2
 
 // 3. Variables
 unsigned long previousMillis = 0;
@@ -122,15 +123,20 @@ void updateTemperature()
 
   if (temperatureConversionPending && now - temperatureRequestMillis >= 750)
   {
-    float measuredTemp = temperatureSensor.getTempCByIndex(0);
-    if (measuredTemp != DEVICE_DISCONNECTED_C)
+    float temperatureSum = 0.0;
+    int validSensorCount = 0;
+
+    for (int sensorIndex = 0; sensorIndex < TEMP_SENSOR_COUNT; sensorIndex++)
     {
-      currentTemp = measuredTemp;
+      float measuredTemp = temperatureSensor.getTempCByIndex(sensorIndex);
+      if (measuredTemp != DEVICE_DISCONNECTED_C && !isnan(measuredTemp))
+      {
+        temperatureSum += measuredTemp;
+        validSensorCount++;
+      }
     }
-    else
-    {
-      currentTemp = NAN;
-    }
+
+    currentTemp = validSensorCount > 0 ? temperatureSum / validSensorCount : NAN;
 
     temperatureConversionPending = false;
   }

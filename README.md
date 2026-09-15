@@ -16,13 +16,15 @@ A simple Arduino project that displays a countdown timer, target temperature, an
 ## Wiring (as used in the sketch)
 - LCD backlight: pin `38` (`LCD_BL`)
 - ADKeyboard `OUT`: pin `2` (`ADKEY_OUT_PIN`) — ADC1 input with 11 dB attenuation
-- DS18B20 data: pin `3` (`TEMP_SENSOR_PIN`)
+- DS18B20 data for both sensors: pin `3` (`TEMP_SENSOR_PIN`)
 
 GPIO `4` must not be used for the temperature sensor because the board uses it
-for `LCD_BAT_VOLT` battery-voltage measurement. For the DS18B20, connect `VDD`
-to `3.3V`, `GND` to `GND`, and `DQ` to GPIO `3`. Add a `4.7 kOhm` pull-up
-resistor between `DQ` and `3.3V`. Do not connect the sensor data line to the
-display or button pins.
+for `LCD_BAT_VOLT` battery-voltage measurement. Connect both DS18B20 sensors
+in parallel on the same OneWire bus: connect both `VDD` pins to `3.3V`, both
+`GND` pins to `GND`, and both `DQ` pins to GPIO `3`. Add one `4.7 kOhm`
+pull-up resistor between the shared `DQ` line and `3.3V`. Each DS18B20 has a
+unique address, so both can share GPIO `3`. Do not connect the sensor data line
+to the display or button pins.
 
 Adjust wiring depending on your board (pin numbers may differ).
 
@@ -99,10 +101,12 @@ sprite refreshes do not cover the static frame.
 - The timer ON/OFF and HOT/COLD fields can be changed with SW2 or SW3 when
 	selected. Holding an action button repeats timer changes in one-minute steps
 	or target-temperature changes in five-degree steps.
-- The DS18B20 is read on GPIO `3` every two seconds using non-blocking
-	conversion timing.
-- If the sensor is disconnected or unavailable, the Current Temp field displays
-	`ERR`.
+- Both DS18B20 sensors share GPIO `3` and are read every two seconds using
+	non-blocking conversion timing. Current Temp displays the arithmetic average
+	of all valid sensor readings.
+- If one sensor is disconnected, the average uses the remaining valid sensor.
+	If both sensors are disconnected or unavailable, the Current Temp field
+	displays `ERR`.
 
 ---
 Created from the `cooking_temperature_control.ino` sketch in this repository.
