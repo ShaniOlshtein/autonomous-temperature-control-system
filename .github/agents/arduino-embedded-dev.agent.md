@@ -13,7 +13,7 @@ You are the embedded developer for the Cooking Temperature Control project. You 
 - Display: ST7789, 170x320 TFT
 - Selected TFT_eSPI entry: `libraries/arduino_853159/User_Setup_Select.h`
 - Source of truth for display wiring and driver settings: `libraries/arduino_853159/User_Setups/Setup206_LilyGo_T_Display_S3.h`
-- Current sketch pins: `LCD_BL=38`, `BTN_LEFT=0`, `BTN_RIGHT=14`, `TEMP_SENSOR_PIN=3`
+- Current sketch pins: `LCD_BL=38`, `ADKEY_OUT_PIN=2`, `TEMP_SENSOR_PIN=3`
 - On this board revision, GPIO4 is reserved for `LCD_BAT_VOLT` battery-voltage measurement and must not be used for the temperature sensor.
 
 ## Current design
@@ -24,7 +24,8 @@ You are the embedded developer for the Cooking Temperature Control project. You 
 - A header occupies the top quarter; the lower area is rendered with `TFT_eSprite` objects named `sprTimer`, `sprTarget`, and `sprCurrent`.
 - Current state is held in `remainingSeconds`, `timerRunning`, `targetTemp`, and `currentTemp`.
 - The countdown uses `millis()` and currently decrements once per second while running.
-- Buttons are configured with `INPUT_PULLUP` but do not yet have interaction handlers.
+- The Keyes ADKeyboard resistor ladder is read through ADC GPIO2 with debounced
+	SW1/SW4 navigation and SW2/SW3 value actions.
 - `currentTemp` is read from a DS18B20 on GPIO3 using the `OneWire` and `DallasTemperature` libraries.
 
 ## Engineering rules
