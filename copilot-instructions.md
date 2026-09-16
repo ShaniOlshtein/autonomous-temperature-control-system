@@ -13,14 +13,16 @@ This workspace contains an Arduino sketch for a cooking temperature control UI f
 ## Required project conventions
 - Treat `Setup206_LilyGo_T_Display_S3.h` as the source of truth for display wiring and settings.
 - Do not change display pins or TFT settings without checking the selected `TFT_eSPI` setup.
-- Keep pin definitions centralized in the sketch (`LCD_BL`, `BTN_LEFT`, `BTN_RIGHT`).
+- Keep pin definitions centralized in the sketch (`LCD_BL`, `ADKEY_OUT_PIN`, `TEMP_SENSOR_PIN`).
 - Prefer `millis()`-based timing instead of blocking delays.
 - Keep code modular and readable.
 
 ## Current GPIO mapping in the sketch
 - `LCD_BL = 38`
-- `BTN_LEFT = 0`
-- `BTN_RIGHT = 14`
+- `ADKEY_OUT_PIN = 2` for the Keyes ADKeyboard resistor ladder
+- `TEMP_SENSOR_PIN = 3` for the shared OneWire data line of two DS18B20 sensors
+- GPIO4 is reserved as `LCD_BAT_VOLT` for battery-voltage measurement and must not be
+	used for the temperature sensor
 
 These should stay aligned with the actual board wiring. If hardware changes, update both the sketch and the `TFT_eSPI` setup together.
 

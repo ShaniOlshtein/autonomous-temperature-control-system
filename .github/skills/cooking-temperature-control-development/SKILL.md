@@ -26,7 +26,7 @@ Apply a focused, hardware-aware change to the Cooking Temperature Control projec
 3. Check hardware dependencies before changing code:
    - Use `libraries/arduino_853159/User_Setup_Select.h` to identify the selected setup.
    - Use `libraries/arduino_853159/User_Setups/Setup206_LilyGo_T_Display_S3.h` as the display wiring and driver source of truth.
-   - Preserve `LCD_BL=38`, `BTN_LEFT=0`, and `BTN_RIGHT=14` unless the hardware change is intentional and documented.
+   - Preserve `LCD_BL=38`, `ADKEY_OUT_PIN=2`, and `TEMP_SENSOR_PIN=3` unless the hardware change is intentional and documented.
 4. State the expected behavior and hardware impact, then make the smallest root-cause edit.
 5. Keep responsibilities separate:
    - Read buttons and sensors in input/acquisition code.
