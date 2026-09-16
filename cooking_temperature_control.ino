@@ -38,7 +38,8 @@ enum SelectionField
   TIMER_POWER,
   TIMER_VALUE,
   TARGET_VALUE,
-  TARGET_MODE
+  TARGET_MODE,
+  SELECTION_FIELD_COUNT
 };
 
 SelectionField selectedField = TIMER_POWER;
@@ -151,44 +152,18 @@ void updateTemperature()
 
 void moveSelection(int direction)
 {
-  if (direction > 0)
+  int nextField = static_cast<int>(selectedField) + direction;
+
+  if (nextField < 0)
   {
-    if (selectedField == TIMER_POWER)
-    {
-      selectedField = TIMER_VALUE;
-    }
-    else if (selectedField == TIMER_VALUE)
-    {
-      selectedField = TARGET_VALUE;
-    }
-    else if (selectedField == TARGET_VALUE)
-    {
-      selectedField = TARGET_MODE;
-    }
-    else
-    {
-      selectedField = TIMER_POWER;
-    }
+    nextField = SELECTION_FIELD_COUNT - 1;
   }
-  else
+  else if (nextField >= SELECTION_FIELD_COUNT)
   {
-    if (selectedField == TIMER_POWER)
-    {
-      selectedField = TARGET_MODE;
-    }
-    else if (selectedField == TIMER_VALUE)
-    {
-      selectedField = TIMER_POWER;
-    }
-    else if (selectedField == TARGET_VALUE)
-    {
-      selectedField = TIMER_VALUE;
-    }
-    else
-    {
-      selectedField = TARGET_VALUE;
-    }
+    nextField = 0;
   }
+
+  selectedField = static_cast<SelectionField>(nextField);
 
   selectedFieldVisible = true;
   lastBlinkMillis = millis();
