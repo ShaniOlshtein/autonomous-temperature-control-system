@@ -16,7 +16,7 @@ Rules:
 - HEAT: ON at `target - hysteresis`, OFF at `target`. COOL mirrored. Always use hysteresis. Heating and cooling are never ON together.
 - Sensor fault shuts the heater OFF. Detect sensor disagreement. Use the watchdog. Provide a dry-run mode (no relay output, serial log) so the human can test without the heater.
 - Timer: `timer.*` holds the runtime state (remaining time, running). The duration is a setting in `config_store` (from Stage 2). What happens when the timer reaches 0 is a human decision (see open_questions.md); do not invent it.
-- Stage 0 (`docs/stage0_refactor.md`): move code WITHOUT changing behavior. The current `timerRunning = true` at boot is existing behavior: report it as an issue for Stage 1, do not change it in Stage 0.
+- Stage 0 (`docs/stage0_refactor.md`): move code WITHOUT changing behavior. Existing quirks (listed in `docs/open_questions.md` section E, e.g. cooking inactive and timer OFF at boot, SW5 START/STOP behavior) stay unchanged in Stage 0; they are fixed in Stage 1.
 - Keep non-blocking DS18B20 reads (conversion takes about 750 ms). Reading by index can change order when a sensor is replaced; suggest address-based reading as a later improvement, do not do it unasked.
 - Pins only from `pins.h`.
 - Physical parameters (heater power, thermal lag, probe placement) are not yours to estimate: ask the Lead.
