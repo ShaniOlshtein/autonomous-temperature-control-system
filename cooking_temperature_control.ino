@@ -28,11 +28,14 @@ TFT_eSprite sprCurrent = TFT_eSprite(&tft);
 unsigned long previousMillis = 0;
 unsigned long temperatureRequestMillis = 0;
 int remainingSeconds = 230;
-bool timerRunning = true;
+bool cookingActive = false;
+bool timerEnabled = false;
 float currentTemp = NAN;
 float targetTemp = 65.0;
 bool isHot = true;
 bool temperatureConversionPending = false;
+uint16_t uiBackgroundColor = TFT_BLACK;
+bool uiNeedsRedraw = false;
 enum SelectionField
 {
   TIMER_POWER,
@@ -48,13 +51,18 @@ unsigned long lastBlinkMillis = 0;
 unsigned long lastAdKeyDebounceMillis = 0;
 int lastAdKeyReading = 0;
 int adKeyState = 0;
+int lastAdcValue = 0;
+unsigned long lastAdcDebugMillis = 0;
 const unsigned long ADKEY_DEBOUNCE_MS = 35;
 const unsigned long SELECTION_BLINK_MS = 400;
 const unsigned long LONG_PRESS_MS = 600;
 const unsigned long LONG_PRESS_REPEAT_MS = 250;
+const unsigned long SW5_STOP_PRESS_MS = 1200;
 unsigned long actionPressMillis = 0;
 unsigned long lastLongActionMillis = 0;
 bool longActionStarted = false;
+unsigned long sw5PressMillis = 0;
+bool sw5LongPressHandled = false;
 
 OneWire oneWire(TEMP_SENSOR_PIN);
 DallasTemperature temperatureSensor(&oneWire);
@@ -62,23 +70,23 @@ DallasTemperature temperatureSensor(&oneWire);
 // 4. Render functions (defined once)
 void renderTimer(bool isOn, String timeStr)
 {
-  sprTimer.fillSprite(TFT_BLACK);
+  sprTimer.fillSprite(uiBackgroundColor);
   sprTimer.setTextDatum(MC_DATUM);
 
   if (isOn && (selectedField != TIMER_POWER || selectedFieldVisible))
   {
-    sprTimer.setTextColor(TFT_GREEN, TFT_BLACK);
+    sprTimer.setTextColor(TFT_GREEN, uiBackgroundColor);
     sprTimer.drawString("ON", COL_WIDTH / 2, 35, 4);
   }
   else if (!isOn && (selectedField != TIMER_POWER || selectedFieldVisible))
   {
-    sprTimer.setTextColor(TFT_RED, TFT_BLACK);
+    sprTimer.setTextColor(TFT_RED, uiBackgroundColor);
     sprTimer.drawString("OFF", COL_WIDTH / 2, SPR_HEIGHT / 2, 4);
   }
 
   if (isOn && (selectedField != TIMER_VALUE || selectedFieldVisible))
   {
-    sprTimer.setTextColor(TFT_WHITE, TFT_BLACK);
+    sprTimer.setTextColor(TFT_WHITE, uiBackgroundColor);
     sprTimer.drawString(timeStr, COL_WIDTH / 2, 85, 4);
   }
 
@@ -87,19 +95,19 @@ void renderTimer(bool isOn, String timeStr)
 
 void renderTargetTemp(float temp, bool hot)
 {
-  sprTarget.fillSprite(TFT_BLACK);
+  sprTarget.fillSprite(uiBackgroundColor);
   sprTarget.setTextDatum(MC_DATUM);
 
   String str = String((int)temp) + "C";
   if (selectedField != TARGET_VALUE || selectedFieldVisible)
   {
-    sprTarget.setTextColor(TFT_WHITE, TFT_BLACK);
+    sprTarget.setTextColor(TFT_WHITE, uiBackgroundColor);
     sprTarget.drawString(str, COL_WIDTH / 2, 38, 6);
   }
 
   if (selectedField != TARGET_MODE || selectedFieldVisible)
   {
-    sprTarget.setTextColor(hot ? TFT_RED : TFT_CYAN, TFT_BLACK);
+    sprTarget.setTextColor(hot ? TFT_RED : TFT_CYAN, uiBackgroundColor);
     sprTarget.drawString(hot ? "HOT" : "COLD", COL_WIDTH / 2, 88, 4);
   }
 
@@ -108,9 +116,9 @@ void renderTargetTemp(float temp, bool hot)
 
 void renderCurrentTemp(float temp)
 {
-  sprCurrent.fillSprite(TFT_BLACK);
+  sprCurrent.fillSprite(uiBackgroundColor);
   sprCurrent.setTextDatum(MC_DATUM);
-  sprCurrent.setTextColor(TFT_WHITE, TFT_BLACK);
+  sprCurrent.setTextColor(TFT_WHITE, uiBackgroundColor);
 
   String str = isnan(temp) ? "ERR" : String((int)temp) + "C";
   sprCurrent.drawString(str, COL_WIDTH / 2, SPR_HEIGHT / 2, 6);
@@ -134,10 +142,26 @@ void updateTemperature()
       {
         temperatureSum += measuredTemp;
         validSensorCount++;
+        Serial.print("Temperature sensor ");
+        Serial.print(sensorIndex + 1);
+        Serial.print(": ");
+        Serial.print(measuredTemp);
+        Serial.println(" C");
+      }
+      else
+      {
+        Serial.print("Temperature sensor ");
+        Serial.print(sensorIndex + 1);
+        Serial.println(": DISCONNECTED");
       }
     }
 
     currentTemp = validSensorCount > 0 ? temperatureSum / validSensorCount : NAN;
+
+    Serial.print("Valid temperature sensors: ");
+    Serial.print(validSensorCount);
+    Serial.print("/");
+    Serial.println(TEMP_SENSOR_COUNT);
 
     temperatureConversionPending = false;
   }
@@ -169,9 +193,30 @@ void moveSelection(int direction)
   lastBlinkMillis = millis();
 }
 
+void updateCookingDisplayColor()
+{
+  uiBackgroundColor = cookingActive ? TFT_DARKGREEN : TFT_BLACK;
+  uiNeedsRedraw = true;
+}
+
+void initializeTimerForCooking()
+{
+  if (timerEnabled)
+  {
+    previousMillis = millis();
+  }
+}
+
+void setCookingActive(bool active)
+{
+  cookingActive = active;
+  updateCookingDisplayColor();
+}
+
 int readAdKey()
 {
   int adcValue = analogRead(ADKEY_OUT_PIN);
+  lastAdcValue = adcValue;
 
   if (adcValue <= 300)
   {
@@ -200,7 +245,7 @@ void changeSelectedValue(int direction, bool largeStep)
 {
   if (selectedField == TIMER_POWER)
   {
-    timerRunning = !timerRunning;
+    timerEnabled = !timerEnabled;
   }
   else if (selectedField == TIMER_VALUE)
   {
@@ -240,8 +285,31 @@ void handleActionButton(int button)
   longActionStarted = false;
 }
 
+void handleSw5Press()
+{
+  Serial.println("SW5 press: START");
+  setCookingActive(true);
+  initializeTimerForCooking();
+}
+
+void handleSw5LongPress()
+{
+  Serial.println("SW5 long press: STOP");
+  setCookingActive(false);
+}
+
 void updateLongPress()
 {
+  if (adKeyState == 5)
+  {
+    if (!sw5LongPressHandled && millis() - sw5PressMillis >= SW5_STOP_PRESS_MS)
+    {
+      handleSw5LongPress();
+      sw5LongPressHandled = true;
+    }
+    return;
+  }
+
   if (adKeyState != 2 && adKeyState != 3)
   {
     return;
@@ -272,6 +340,15 @@ void updateButtons()
   unsigned long now = millis();
   int adKeyReading = readAdKey();
 
+  if (now - lastAdcDebugMillis >= 250)
+  {
+    lastAdcDebugMillis = now;
+    Serial.print("ADC=");
+    Serial.print(lastAdcValue);
+    Serial.print(" decoded=SW");
+    Serial.println(adKeyReading);
+  }
+
   if (adKeyReading != lastAdKeyReading)
   {
     lastAdKeyDebounceMillis = now;
@@ -281,6 +358,8 @@ void updateButtons()
   if (now - lastAdKeyDebounceMillis >= ADKEY_DEBOUNCE_MS && adKeyReading != adKeyState)
   {
     adKeyState = adKeyReading;
+    Serial.print("Button state: SW");
+    Serial.println(adKeyState);
     if (adKeyState == 1)
     {
       moveSelection(-1);
@@ -293,8 +372,15 @@ void updateButtons()
     {
       handleActionButton(adKeyState);
     }
+    else if (adKeyState == 5)
+    {
+      sw5PressMillis = now;
+      sw5LongPressHandled = false;
+      handleSw5Press();
+    }
     else if (adKeyState == 0)
     {
+      sw5PressMillis = 0;
       longActionStarted = false;
     }
   }
@@ -315,12 +401,13 @@ void updateSelectionBlink()
 // 5. Static UI drawing
 void drawStaticUI()
 {
+  tft.fillScreen(uiBackgroundColor);
   tft.drawFastHLine(0, HEADER_HEIGHT, SCREEN_WIDTH, TFT_WHITE);
   tft.drawFastVLine(COL_WIDTH, 0, SCREEN_HEIGHT, TFT_WHITE);
   tft.drawFastVLine(COL_WIDTH * 2, 0, SCREEN_HEIGHT, TFT_WHITE);
 
   tft.setTextDatum(MC_DATUM);
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextColor(TFT_WHITE, uiBackgroundColor);
 
   int centerY = HEADER_HEIGHT / 2;
   tft.drawString("Timer", COL_WIDTH / 2, centerY, 2);
@@ -331,6 +418,8 @@ void drawStaticUI()
 // 6. Setup and Loop
 void setup()
 {
+  Serial.begin(115200);
+
   pinMode(LCD_BL, OUTPUT);
   digitalWrite(LCD_BL, HIGH);
 
@@ -338,6 +427,8 @@ void setup()
   analogSetPinAttenuation(ADKEY_OUT_PIN, ADC_11db);
 
   temperatureSensor.begin();
+  Serial.print("OneWire devices found: ");
+  Serial.println(temperatureSensor.getDeviceCount());
   temperatureSensor.setWaitForConversion(false);
   temperatureSensor.requestTemperatures();
   temperatureRequestMillis = millis();
@@ -345,7 +436,7 @@ void setup()
 
   tft.init();
   tft.setRotation(1);
-  tft.fillScreen(TFT_BLACK);
+  tft.fillScreen(uiBackgroundColor);
 
   sprTimer.createSprite(SPR_WIDTH, SPR_HEIGHT);
   sprTarget.createSprite(SPR_WIDTH, SPR_HEIGHT);
@@ -360,7 +451,13 @@ void loop()
   updateSelectionBlink();
   updateTemperature();
 
-  if (timerRunning && remainingSeconds > 0)
+  if (uiNeedsRedraw)
+  {
+    drawStaticUI();
+    uiNeedsRedraw = false;
+  }
+
+  if (cookingActive && timerEnabled && remainingSeconds > 0)
   {
     unsigned long currentMillis = millis();
 
@@ -376,7 +473,7 @@ void loop()
   String timerStr = (minutes < 10 ? "0" : "") + String(minutes) + ":" +
                     (seconds < 10 ? "0" : "") + String(seconds);
 
-  renderTimer(timerRunning, timerStr);
+  renderTimer(timerEnabled, timerStr);
   renderTargetTemp(targetTemp, isHot);
   renderCurrentTemp(currentTemp);
 }
