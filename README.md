@@ -7,6 +7,8 @@ A simple Arduino project that displays a countdown timer, target temperature, an
 - Display of target temperature and current temperature
 - Visual HOT mode label under the target temperature
 - ADKeyboard navigation with blinking selection feedback
+- SW5 starts cooking with a short press and stops it with a long press
+- Active cooking mode is shown with a dark-green screen background
 
 ## Hardware
 - ESP32-S3 LilyGo T-Display S3
@@ -86,21 +88,23 @@ Open `cooking_temperature_control.ino` and modify these variables as needed:
 ## Usage
 1. Build and upload the sketch to your Arduino board.
 2. Power the TFT display and the board.
-3. The screen shows the Timer, Target Temp, and Current Temp columns. The target column includes a visual HOT/COLD selector with HOT selected. The timer counts down when `timerRunning` is true.
+3. The screen shows the Timer, Target Temp, and Current Temp columns. The target column includes a visual HOT/COLD selector with HOT selected. The system starts in standby with the timer stopped.
 4. Press `SW4` on the ADKeyboard to move the selection forward: `ON/OFF` -> timer value -> target temperature -> `HOT/COLD` -> `ON/OFF`. Press `SW1` to move backward through the same order. The selected part blinks.
 5. `SW2` decreases the selected value and `SW3` increases it. On the timer field, a short press changes one second and holding changes one minute at a time. On the target temperature field, a short press changes one degree and holding changes five degrees at a time. On the ON/OFF and HOT/COLD fields, either button toggles the selected state.
+6. Press `SW5` briefly to start cooking. The display background changes to dark green as a running indicator. The timer counts down only when its separate `ON/OFF` setting is ON. Hold `SW5` for at least 1.2 seconds to stop cooking; the timer setting itself remains unchanged.
 
 The dynamic value areas are inset from the white column and header dividers so
 sprite refreshes do not cover the static frame.
 
 ## Notes and Next Steps
 - The ADKeyboard uses SW1 and SW4 for navigation. SW2 decreases the selected
-	timer or target value, and SW3 increases it. SW5 is decoded but has no action
-	yet.
+	timer or target value, and SW3 increases it. SW5 starts cooking on a short
+	press and stops cooking on a long press.
 - The ADKeyboard resistor ladder is connected to `3.3V` through its internal pull-up. The current approximate decoded ADC ranges are SW1 `0-300`, SW2 `301-950`, SW3 `951-1700`, SW4 `1701-3000` (measured around `2664` on this board), SW5 `3001-3400`, and no button above `3400`.
 - The timer ON/OFF and HOT/COLD fields can be changed with SW2 or SW3 when
-	selected. Holding an action button repeats timer changes in one-minute steps
-	or target-temperature changes in five-degree steps.
+	selected. Timer ON/OFF is independent from the SW5 cooking start/stop state.
+	Holding an action button repeats timer changes in one-minute steps or
+	target-temperature changes in five-degree steps.
 - Both DS18B20 sensors share GPIO `3` and are read every two seconds using
 	non-blocking conversion timing. Current Temp displays the arithmetic average
 	of all valid sensor readings.
