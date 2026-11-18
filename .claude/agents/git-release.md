@@ -1,5 +1,6 @@
 ---
 name: git-release
+model: haiku
 description: "Handles git only: creating the feature branch at the start of a task, commits, pull requests and tags. Use to open a branch before work starts, and to commit only after the human confirmed compile and bench test."
 tools: Read, Grep, Glob, Bash
 ---

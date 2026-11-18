@@ -21,6 +21,7 @@
 | 17 | 2026-11-18 | `docs/stage0_refactor.md` updated to the current sketch (SW5, background color, ADC debug print, their checks) | human (accepted recommendation) |
 | 18 | 2026-11-18 | `cookingActive` and `uiNeedsRedraw` may be split across modules only if the redraw timing stays identical; otherwise keep them together and report | human |
 | 19 | 2026-11-18 | Stage 0 contracts approved: `config_store.h`, `sensors.h`, `timer.h`, `display_ui.h`, `input.h` (25 public functions, module-prefix names); `pins.h` unchanged. Implementation order: config_store → sensors, timer → display_ui, input → `.ino`; qa-safety compares old vs new before the human compiles | human |
+| 20 | 2026-11-19 | `git-release` runs on the `haiku` model (`model: haiku` in `.claude/agents/git-release.md`), intentionally | human |
 
 ## Question template (subagent -> Lead)
 - **Question:**

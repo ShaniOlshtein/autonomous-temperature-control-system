@@ -66,3 +66,11 @@ Entry format:
 - Result: human confirms Stage 0 compile, upload and bench test passed; the earlier buttons issue is resolved per her report
 - Verified / Assumed / Unknown: Verified by the human on hardware; cause of the earlier buttons issue Unknown (not reported); `.claude/agents/git-release.md` (`model: haiku`) left out of the commit until the human confirms it is hers
 - Open items: PR review and merge by the human; then the VS Code toolchain decisions
+
+## 2026-11-19 — Human answers after the Stage 0 push
+- Requested by: human
+- Delegated to: none
+- Files changed: docs/decisions.md (20), docs/worklog.md
+- Result: `model: haiku` in git-release.md is the human's intentional change (decision 20); the earlier "buttons not responding" report was a human test mistake, not a code issue; the human opens the Stage 0 PR on the GitHub website
+- Verified / Assumed / Unknown: Verified by the human's statements; Stage 0 commit 0239b6b pushed; PR not yet opened
+- Open items: commit git-release.md (separately); merge of the Stage 0 PR; then the VS Code toolchain decisions
