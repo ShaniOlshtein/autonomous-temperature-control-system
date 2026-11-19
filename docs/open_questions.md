@@ -10,10 +10,9 @@ Answered questions move to `docs/decisions.md`. The Lead keeps this file current
 5. **Ranges and defaults — approve or change.** PROPOSED: target 0–100.0 °C, hysteresis 0.2–10.0 °C with default 0.5 °C, timer duration 0–359999 s. Current code defaults: target 65 °C, timer 230 s, mode HOT.
 6. **Two sensors**: average (current behavior) or redundancy? Maximum allowed difference before declaring a fault? Where is each probe placed (in the liquid or on the pot wall)?
 7. **Timer semantics**: what happens when it reaches 0 (stop heating, beep, keep holding temperature)? Does it start counting on START or only when the target is reached?
-8. **Behavior after boot or power loss**: stay stopped (recommended) or resume the previous run? The current code starts the timer running at boot.
+8. **Behavior after boot or power loss**: stay stopped (recommended) or resume the previous run? The current code boots with cooking inactive and the timer OFF (see E12).
 9. **Relay pins**: confirm that GPIO10 (heater) and GPIO11 (cooler) are reachable on your header.
 10. **Thermal behavior** (°C per minute heating/cooling): can be measured later, needed for overshoot tuning.
-11. **Stage 0**: keep the current quirks (timer running at boot, temperatures shown as whole numbers, HOT/COLD only cosmetic) unchanged during Stage 0? Recommended: yes.
 
 ## B. Needed for BLE (Stage 3)
 12. **Security**: pairing method (proposal: LE Secure Connections with a passkey shown on the screen) and bonded-only writes.
@@ -36,3 +35,18 @@ Answered questions move to `docs/decisions.md`. The Lead keeps this file current
 - The summary says the loop runs "many times per second"; sensors are read every 2 s (fine for brewing; confirm).
 - README lists `currentTemp` as a configuration variable; it is a measurement.
 - The ASCII flow in the summary has no fault or sensor-error branch.
+
+## E. Current quirks kept unchanged in Stage 0 (decision 15) — decide the fix in Stage 1
+Found in `cooking_temperature_control.ino` (479 lines, `main` 43e3339). For each one: keep, fix, or change.
+- E1. **SW5 hold from stopped**: START fires on press, then STOP fires after 1.2 s. Holding SW5 to stop always passes through START first.
+- E2. **SW5 press while already active**: redraws the whole static screen again (possible flicker) and resets the one-second timestamp, so the current second restarts.
+- E3. **Timer ON while cooking is already active**: `previousMillis` is only set at START, so the first decrement can happen immediately.
+- E4. **Timer reaches 0**: nothing happens. It stays at 00:00, cooking stays active, no beep or stop.
+- E5. **Timer value has no upper limit** (`int remainingSeconds`); minutes above 99 show 3+ digits. The value can also be edited while counting.
+- E6. **Target temperature**: only clamped at 0, no upper limit. Shown as a whole number.
+- E7. **HOT/COLD (`isHot`) is cosmetic**: it changes only the label; nothing uses it.
+- E8. **Temperatures are truncated, not rounded** (`(int)temp`): 64.9 shows 64; negative values truncate toward zero.
+- E9. **Sensor reading by index** (`getTempCByIndex`): sensor order can change after replugging; the 85 °C power-on value of a DS18B20 is not filtered (relevant for safety in Stage 1).
+- E10. **Serial output volume**: ADC debug line every 250 ms and per-sensor lines every 2 s.
+- E11. **Rendering**: all three sprites are redrawn on every `loop()` pass with no rate limit, and `String` objects are built each pass (heap use).
+- E12. **Boot state**: cooking inactive and timer OFF at boot; there is no saved state (ties to question 8).
