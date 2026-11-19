@@ -74,3 +74,27 @@ Entry format:
 - Result: `model: haiku` in git-release.md is the human's intentional change (decision 20); the earlier "buttons not responding" report was a human test mistake, not a code issue; the human opens the Stage 0 PR on the GitHub website
 - Verified / Assumed / Unknown: Verified by the human's statements; Stage 0 commit 0239b6b pushed; PR not yet opened
 - Open items: commit git-release.md (separately); merge of the Stage 0 PR; then the VS Code toolchain decisions
+
+## 2026-11-19 — Stage 0 merged; VS Code toolchain decisions recorded
+- Requested by: human
+- Delegated to: none (Lead-owned docs only; no code, no install)
+- Files changed: docs/decisions.md (21-27), docs/open_questions.md (16, 17, 19 removed; 18 kept until the setup file is copied), docs/plans/vscode_toolchain.md (new), docs/worklog.md
+- Result: Stage 0 is complete and merged to `main` (PR #3, merge commit a14f0a8); the buttons were bench-tested by the human and work. This supersedes the "PR not merged" note in the 2026-11-18 toolchain entry. Toolchain decisions recorded: arduino-cli with core 3.3.11 (21, supersedes 3), locked board settings (22), no 16MB/OPI before Stage 3 (23), working folder `C:\dev\cooking_temperature_control` (24), build-runner agent (25), upload only with approval (26), reporting rule (27). Plan saved to `docs/plans/vscode_toolchain.md`
+- Verified / Assumed / Unknown: Verified: `main` = origin/main = a14f0a8 (git log). Verified: `C:\dev\cooking_temperature_control` does not exist yet (plan step 1, human). Unknown: FQBN option keys for the locked settings (build-runner checks with `arduino-cli board details`). Nothing compiled
+- Open items: plan step 1 (human installs arduino-cli and clones); step 2 branch; docs commit vs decision 27 (see plan, open points)
+
+## 2026-11-19 — Docs-only commit exception; working folder check
+- Requested by: human
+- Delegated to: none (Lead-owned docs only)
+- Files changed: docs/decisions.md (28), docs/worklog.md
+- Result: decision 28 recorded (docs-only commits allowed without a compile output; decision 27 kept). The human reported moving the repo to `C:\dev\cooking_temperature_control`, but that folder did not exist; the human then confirmed the only repo is `~/OneDrive/Arduino/cooking_temperature_control`. Work continues there
+- Verified / Assumed / Unknown: Verified: `C:\dev` does not exist; OneDrive repo on `chore/vscode-toolchain` with today's changes. Unknown: whether decision 24 (working folder outside OneDrive) still stands
+- Open items: human to confirm the docs-only commit list; human to confirm or change decision 24
+
+## 2026-11-19 — Working folder decided; docs-only commit
+- Requested by: human (commit approved; option B for the folder)
+- Delegated to: git-release (docs-only commit on `chore/vscode-toolchain`, decision 28)
+- Files changed: docs/decisions.md (29), docs/plans/vscode_toolchain.md (folder, step 1, progress), docs/worklog.md
+- Result: the repo stays in OneDrive (decision 29 amends 24); today's docs committed on the branch, no push
+- Verified / Assumed / Unknown: Verified: diff contains docs only (shown to the human). Unknown: arduino-cli install status
+- Open items: plan step 1 (human installs arduino-cli v1.5.1)

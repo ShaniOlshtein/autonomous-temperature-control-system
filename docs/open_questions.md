@@ -21,10 +21,7 @@ Answered questions move to `docs/decisions.md`. The Lead keeps this file current
 15. Approve `docs/ble_spec.md` (wire format; the UUIDs were generated randomly for this project).
 
 ## C. Environment and repo
-16. Exact Arduino environment and the board settings you use today (record them in `docs/dependencies.md`). Agents do not compile.
-17. Exact versions that compile today: Arduino IDE, ESP32 core, TFT_eSPI, OneWire, DallasTemperature.
-18. **TFT_eSPI setup lives outside the repo** (`libraries/arduino_853159/...`). Copy the two setup files into the repo or document the steps, so builds are reproducible.
-19. **Sketch folder**: the Arduino folder name must equal the main `.ino` name. Which local folder do you compile from? `pins.h` and the new `.h/.cpp` files must sit in that folder, next to the `.ino`.
+18. **TFT_eSPI setup lives outside the repo** (`libraries/arduino_853159/...`). Copy the two setup files into the repo or document the steps, so builds are reproducible. (Closes when `tft_setup/Setup206_LilyGo_T_Display_S3.h` is copied verbatim, `docs/plans/vscode_toolchain.md` step 4.)
 20. Git: base branch, remote and pull request policy (repo `ShaniOlshtein/autonomous-temperature-control-system`).
 21. Power: USB only, or battery too? (Battery uses GPIO4 monitoring and affects the backlight.)
 22. Display: temperatures with decimals (0.1 °C) or whole degrees (current)?
