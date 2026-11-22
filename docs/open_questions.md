@@ -56,3 +56,4 @@ Found in `cooking_temperature_control.ino` (479 lines, `main` 43e3339). For each
 ## G. Buttons — open on 2026-11-22
 - G1. SW5 does not work: human says it is a hardware fault that existed before; she will fix it. After the fix, measure its ADC value (Serial `ADC=...`) to check the SW5 range 3001-3400.
 - G2. ADC values of SW1, SW2 and "no button" were never measured on this board (only SW3 1702-1705 and SW4 2789-2793 on 2026-11-22, SW4 about 2664 earlier).
+- G4 (2026-11-22, Stage 2/3). If a later writer (BLE, config_store) switches the timer OFF while TIMER_VALUE is selected, the selection is hidden and SW2/SW3 still change the hidden timer value. Today impossible (the timer toggles only while TIMER_POWER is selected; display-ui preflight for decision 38). Handle when another writer of the timer enable is added.

@@ -36,6 +36,21 @@ static void moveSelection(int direction)
     nextField = 0;
   }
 
+  // Decision 38: TIMER_VALUE is not drawn while the timer is OFF, so skip it.
+  if (nextField == TIMER_VALUE && !timerIsEnabled())
+  {
+    nextField += direction;
+
+    if (nextField < 0)
+    {
+      nextField = SELECTION_FIELD_COUNT - 1;
+    }
+    else if (nextField >= SELECTION_FIELD_COUNT)
+    {
+      nextField = 0;
+    }
+  }
+
   displayUiSelectField(static_cast<SelectionField>(nextField));
 }
 

@@ -39,6 +39,7 @@
 | 35 | 2026-11-19 | Firmware sources (`.ino`, `.cpp`, `.h`) and `sketch.yaml` live in the sketch folder `cooking_temperature_control/`, not in the repo root; new modules go there too. Docs/agent files updated to the new path; the human pre-approved this task without per-step approvals | human |
 | 36 | 2026-11-22 | Toolchain bench test accepted (SW3 and SW5 faults are pre-existing): commit, push and PR `chore/vscode-toolchain`. Then a separate branch `fix/adkey-sw3-threshold` (stacked on `chore/vscode-toolchain`, because the sources moved there): SW3/SW4 boundary in `input.cpp` changes from 1700 to 2250 (midpoint of measured SW3 1705 and SW4 2790), then compile, review, approved upload, bench test, commit, push. SW5 is a hardware fault the human fixes herself | human |
 | 37 | 2026-11-22 | USB-CDC stall fix (open question G3): in the `.ino`, right after `Serial.begin(115200)`, add `Serial.setTxTimeoutMs(0);` (API in core 3.3.11 `HWCDC.h:60`) so Serial writes never wait when no host reads the port. Done on the same branch `fix/adkey-sw3-threshold`. Owner control-logic | human (accepted recommendation) |
+| 38 | 2026-11-22 | When the timer is OFF, SW1/SW4 navigation skips the hidden TIMER_VALUE field (3 fields); with the timer ON all 4 fields as before. Change in `moveSelection()` (`input.cpp`, owner display-ui), on a new branch `fix/skip-hidden-timer-field` from `fix/adkey-sw3-threshold` | human (accepted recommendation) |
 
 ## Question template (subagent -> Lead)
 - **Question:**

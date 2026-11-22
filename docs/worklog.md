@@ -186,3 +186,11 @@ Entry format:
 - Result: Compiled, exit code 0: "Sketch uses 365310 bytes (27%) ... Maximum is 1310720 bytes." "Global variables use 28360 bytes (8%) ... Maximum is 327680 bytes." No errors/warnings. qa-safety APPROVED FOR COMPILE AND BENCH TEST (non-blocking: Serial.flush trap, multi-task writes, stale ".ino Stage 0" comment). Upload COM13 (human approved) exit code 0, hash verified, no manual BOOT/RST
 - Verified / Assumed / Unknown: Verified: compile/upload output; core 3.3.11 HWCDC write() waits up to 20 x tx_timeout_ms per write (read by Lead and qa-safety). Unknown: whether the freeze is gone (human bench test)
 - Open items: human bench test (both checklists of this branch); then commit + push; PRs opened by the human (gh not installed)
+
+## 2026-11-22 — fix/skip-hidden-timer-field: skip TIMER_VALUE while the timer is OFF (decision 38)
+- Requested by: human
+- Delegated to: git-release (branch from 32ee9d2), display-ui (moveSelection in input.cpp), build-runner (compile, board list, upload), qa-safety (review)
+- Files changed: cooking_temperature_control/input.cpp (moveSelection), docs/decisions.md (38), docs/open_questions.md (G4), docs/test_plan.md (checklist), docs/worklog.md. Also committed earlier today: 32ee9d2 on fix/adkey-sw3-threshold (pushed; PR to be opened by the human, base chore/vscode-toolchain)
+- Result: Compiled, exit code 0: "Sketch uses 365322 bytes (27%) ... Maximum is 1310720 bytes." "Global variables use 28360 bytes (8%) ... Maximum is 327680 bytes." No errors/warnings. qa-safety APPROVED FOR COMPILE AND BENCH TEST (non-blocking: stale "Stage 0" header comment in input.cpp). Upload COM13 (human approved) exit code 0, hash verified
+- Verified / Assumed / Unknown: Verified: compile/upload output. Unknown: bench test (human)
+- Open items: human bench test; then commit + push; G1, G2, G4; F1-F4
