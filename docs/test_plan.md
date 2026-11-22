@@ -48,9 +48,32 @@ From qa-safety, 2026-11-19 (APPROVED FOR COMPILE AND BENCH TEST). Heater DISCONN
 9. Program size compared with an Arduino IDE build of the same commit.
 Not testable yet: over-temperature, BLE disconnect while heating, reset while heating (Stage 1/3).
 
+## fix/adkey-sw3-threshold — SW3/SW4 boundary 1700 -> 2250 (decision 36)
+From qa-safety, 2026-11-22 (APPROVED FOR COMPILE AND BENCH TEST). Heater disconnected; Serial Monitor at 115200.
+1. Boot: normal three-column layout; idle prints `decoded=SW0`. Note the idle ADC value (G2).
+2. SW1: `Button state: SW1`, selection moves left. Note the ADC value (G2).
+3. SW2: lowers the selected value; held on the target temperature it repeats in steps of 5 after about 0.6 s. Note the ADC value (G2).
+4. SW3 (the fix): `decoded=SW3`, never SW4; raises the value; held on target and timer it repeats upward without moving the selection. 20 presses, none decoded as SW4.
+5. SW4: always SW4 (about 2790), selection moves right. 20 presses, none decoded as SW3 or SW5.
+6. Quick and partial presses on SW3 and SW4: no action from the other button.
+7. SW5: skip (hardware fault, G1). After the repair, measure it: the SW4/SW5 boundary 3000 is only about 207 above SW4.
+8. Power cycle: same results.
+
+## fix/adkey-sw3-threshold — USB-CDC stall fix `Serial.setTxTimeoutMs(0)` (decision 37, G3)
+From qa-safety, 2026-11-22 (APPROVED FOR COMPILE AND BENCH TEST). Heater disconnected.
+1. USB charger (not a PC): display normal, timer ON/OFF blinks smoothly, SW1-SW4 respond at once; watch 2 minutes for a freeze.
+2. PC, no Serial Monitor: wait 10 s after Windows enumerates the board; display, blink and buttons keep running 2 minutes.
+3. PC, Serial Monitor open (115200): ADC lines every ~250 ms, sensor lines readable (an occasional lost first line is OK); buttons and display smooth.
+4. Close the Serial Monitor: the board keeps running (old freeze trigger). Reopen: output resumes.
+5. SW3 decodes as SW3 (~1705); SW4 still SW4 (~2790).
+6. Next approved upload: esptool connects and resets as before (report any change).
+7. Unplug one DS18B20, then both: DISCONNECTED shown, no freeze.
+8. Power cycle and RST: same normal boot each time.
+
 ## Results log
 (The Lead adds the date, stage and what the human reported.)
 - 2026-11-18 — Stage 0: compile and upload OK; buttons not responding (first report).
 - 2026-11-19 — Stage 0: human reports the stage passed successfully (compile, upload, bench test). Approved for commit and push.
 - 2026-11-22 — Toolchain upload (arduino-cli, COM13): human reports SW3 does not increase the value; it moves the selection forward (acts like a navigation key). Human says SW3 also did not work on 2026-11-19 (correction to the entry above). Pending: VCC of the ADKeyboard (3.3V or 5V) and ADC readings per button from Serial before any threshold change.
 - 2026-11-22 — Toolchain bench test (arduino-cli build, one DS18B20 connected): human reports everything passes except SW3 (pre-existing threshold bug, measured ADC 1702-1705 vs limit 1700; SW4 measured 2789-2793) and SW5 (pre-existing HARDWARE fault, human will fix; not a firmware task). Approved for commit, push and PR.
+- 2026-11-22 — fix/adkey-sw3-threshold (SW3 2250 + setTxTimeoutMs(0)): human reports it works very well now (no freeze, SW3 OK). Approved for commit and push. New issue reported: with the timer OFF, navigation still stops on the hidden timer-value field (one press does nothing).

@@ -100,7 +100,7 @@ sprite refreshes do not cover the static frame.
 - The ADKeyboard uses SW1 and SW4 for navigation. SW2 decreases the selected
 	timer or target value, and SW3 increases it. SW5 starts cooking on a short
 	press and stops cooking on a long press.
-- The ADKeyboard resistor ladder is connected to `3.3V` through its internal pull-up. The current approximate decoded ADC ranges are SW1 `0-300`, SW2 `301-950`, SW3 `951-1700`, SW4 `1701-3000` (measured around `2664` on this board), SW5 `3001-3400`, and no button above `3400`.
+- The ADKeyboard resistor ladder is connected to `3.3V` through its internal pull-up. The current approximate decoded ADC ranges are SW1 `0-300`, SW2 `301-950`, SW3 `951-2250` (measured around `1703`), SW4 `2251-3000` (measured around `2790` on this board), SW5 `3001-3400`, and no button above `3400`.
 - The timer ON/OFF and HOT/COLD fields can be changed with SW2 or SW3 when
 	selected. Timer ON/OFF is independent from the SW5 cooking start/stop state.
 	Holding an action button repeats timer changes in one-minute steps or

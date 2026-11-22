@@ -48,5 +48,5 @@ Power pins on the headers: 3V, 5V, GND. GPIO levels are **3.3V**, low current.
 - Mains (230V): fuse or breaker + RCD, enclosed box, independent hardware thermal cutoff. This is not a software job.
 
 ## Current wiring (from README)
-- ADKeyboard OUT -> GPIO2 (ADC, 11 dB). Decoded ranges: SW1 0-300, SW2 301-950, SW3 951-1700, SW4 1701-3000 (about 2664 measured), SW5 3001-3400, no button above 3400.
+- ADKeyboard OUT -> GPIO2 (ADC, 11 dB). Decoded ranges: SW1 0-300, SW2 301-950, SW3 951-2250 (about 1703 measured 2026-11-22), SW4 2251-3000 (about 2790 measured 2026-11-22; about 2664 earlier), SW5 3001-3400, no button above 3400.
 - 2x DS18B20: VDD -> 3.3V, GND -> GND, DQ -> GPIO3 (shared), one 4.7k pull-up between DQ and 3.3V.
