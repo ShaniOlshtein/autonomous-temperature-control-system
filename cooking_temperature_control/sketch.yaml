@@ -1,0 +1,4 @@
+# arduino-cli 1.5.1 build settings. Owner: build-runner (decisions 21, 22, 31, 32).
+# default_fqbn = decision 22, mapped with `arduino-cli board details -b esp32:esp32:esp32s3` (core 3.3.11).
+# No default_port (decision 32). No profiles: `compile --profile` would download the platform and libraries.
+default_fqbn: esp32:esp32:esp32s3:UploadSpeed=921600,USBMode=hwcdc,CDCOnBoot=cdc,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,PSRAM=disabled,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default

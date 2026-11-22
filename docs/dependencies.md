@@ -6,6 +6,7 @@ Only the Lead edits this file. Find installed versions in Arduino IDE: Tools > M
 | Library | Version | Needed by | Status | Notes |
 |---|---|---|---|---|
 | ESP32 core (esp32 by Espressif Systems) | 3.3.11 | all | CONFIRMED | Stage 0 compiled and passed the bench test with it (2026-11-19). Official LilyGO note: newer cores may break TFT_eSPI |
+| arduino-cli | 1.5.1 | build-runner | CONFIRMED | `C:/tools/arduino-cli`; compiled (exit 0) and uploaded (2026-11-19/22) with core 3.3.11 and the three libraries below (user dir `C:/Users/s0533/OneDrive/Arduino`) |
 | Arduino IDE | 1.8.19 | human | CONFIRMED | LilyGO note: above 2.0.14 may break TFT_eSPI |
 | TFT_eSPI | 2.5.43 | display-ui | CONFIRMED | requires `Setup206_LilyGo_T_Display_S3.h` selected in `User_Setup_Select.h` |
 | OneWire | 2.3.8 | control-logic | CONFIRMED | already used by the sketch |

@@ -1,6 +1,6 @@
 # Bench test plan (the Lead maintains it from `qa-safety` reports)
 
-All tests run WITHOUT the heater connected: use an LED or the relay alone. The human compiles, uploads and reports.
+All tests run WITHOUT the heater connected: use an LED or the relay alone. `build-runner` compiles and, only with the human's approval of each upload, uploads; the human runs the checklist and reports.
 
 ## Stage 0 — module split (no behavior change)
 Run the checklist in `docs/stage0_refactor.md` before and after. Both runs must look and behave the same.
@@ -35,7 +35,22 @@ Values match BLE · BLE status shown · fault shown.
 
 Only after all stages: a supervised test with the real heater, by a person qualified for mains wiring.
 
+## Toolchain (chore/vscode-toolchain) — first arduino-cli upload, firmware unchanged (Stage 0)
+From qa-safety, 2026-11-19 (APPROVED FOR COMPILE AND BENCH TEST). Heater DISCONNECTED; relay module disconnected or LED only (GPIO10/11 are not driven by Stage 0).
+1. Before the upload: close every Serial Monitor; build-runner runs `arduino-cli board list`; the human confirms the port; the approval names the .bin (path, size, build time from the latest exit-0 report) and the port.
+2. Optional gate test: VS Code Upload task, type a wrong port => "Upload cancelled. Nothing was flashed."
+3. Upload: exit code 0. If it cannot connect: hold BOOT, press RST, release BOOT, retry. Press RST if the board does not restart.
+4. Serial 115200 (port may re-enumerate): "OneWire devices found: 2", per-sensor lines and "Valid temperature sensors: 2/2" every 2 s, ADC debug line every 250 ms.
+5. Display: backlight on, three-column 320x170 layout as with the IDE build (`Simulation.png`).
+6. Buttons SW1-SW5 as in the Stage 0 checklist, including the SW5 START/STOP Serial lines.
+7. Sensors: unplug one => "DISCONNECTED" and 1/2; unplug both => 0/2; display as with the IDE build.
+8. RST and power cycle: boots with cooking inactive and timer OFF (E12); Serial returns (CDC On Boot).
+9. Program size compared with an Arduino IDE build of the same commit.
+Not testable yet: over-temperature, BLE disconnect while heating, reset while heating (Stage 1/3).
+
 ## Results log
 (The Lead adds the date, stage and what the human reported.)
 - 2026-11-18 — Stage 0: compile and upload OK; buttons not responding (first report).
 - 2026-11-19 — Stage 0: human reports the stage passed successfully (compile, upload, bench test). Approved for commit and push.
+- 2026-11-22 — Toolchain upload (arduino-cli, COM13): human reports SW3 does not increase the value; it moves the selection forward (acts like a navigation key). Human says SW3 also did not work on 2026-11-19 (correction to the entry above). Pending: VCC of the ADKeyboard (3.3V or 5V) and ADC readings per button from Serial before any threshold change.
+- 2026-11-22 — Toolchain bench test (arduino-cli build, one DS18B20 connected): human reports everything passes except SW3 (pre-existing threshold bug, measured ADC 1702-1705 vs limit 1700; SW4 measured 2789-2793) and SW5 (pre-existing HARDWARE fault, human will fix; not a firmware task). Approved for commit, push and PR.

@@ -14,15 +14,16 @@ Do not take initiative on tasks she did not request; list suggestions at the end
 ## Workflow per task
 1. SURVEY: read `docs/decisions.md`, `docs/dependencies.md`, `docs/open_questions.md`, then only the relevant code.
 2. PLAN and get approval (above).
-3. BRANCH: ask `git-release` to create `feat/<topic>` (or `refactor/<topic>`) from a clean base BEFORE any code. Confirm the branch.
+3. BRANCH: ask `git-release` to create `feat/<topic>` (or `refactor/<topic>`, `chore/<topic>`) from a clean base BEFORE any code. Confirm the branch.
 4. PREFLIGHT: tell each involved owner "preflight, do not write code" for its task. Each replies READY or BLOCKED (see AGENTS.md).
 5. RESOLVE BLOCKED items: answer from the repo, from another agent, or ask the human (see "Asking the human").
 6. CONTRACTS FIRST: headers and specs (`pins.h`, `docs/ble_spec.md`, `config_store.h`, `safety.h`) are written and approved by the human before implementation.
 7. IMPLEMENT only after every involved agent replied READY and contracts are approved. Follow dependency order.
-8. REVIEW: `qa-safety` reviews by reading (read-only). Nothing is compiled by agents.
-9. HUMAN TEST: tell the human exactly which files changed. She compiles, uploads and bench-tests (heater disconnected) and reports back.
-10. COMMIT: only after she confirms compile and bench test passed, `git-release` commits on the feature branch and opens a PR. Never to `main`.
-11. RECORD: update memory files and the worklog (below).
+8. BUILD: `build-runner` compiles. Relay its report to the human as is: command, exit code, program size, first 30 error lines verbatim. Exit code not 0 => back to the owner; no review yet.
+9. REVIEW: `qa-safety` reviews by reading (read-only), with the compile report in its prompt.
+10. UPLOAD: ask the human for approval of this specific upload; only then `build-runner` uploads. Then the human bench-tests (heater disconnected) and reports back.
+11. COMMIT: only with a successful compile report (exit code 0) AND the human's bench-test confirmation, `git-release` commits on the feature branch and opens a PR. Never to `main`. Exception (decision 28): a docs-only change (no `.ino`, `.h`, `.cpp`) may be committed without a compile after showing the human `git diff --stat`.
+12. RECORD: update memory files and the worklog (below).
 
 ## Delegation rules
 - Subagents do not see this conversation. In every task prompt put the relevant decisions and name the files to read.
@@ -35,7 +36,7 @@ After EVERY task or human answer, before anything else:
 - Human decided something => add a row to `docs/decisions.md`.
 - A question was answered => remove it from `docs/open_questions.md`.
 - A subagent reported a new library => add it to `docs/dependencies.md` as REQUESTED.
-- The human reported an installed version and a successful compile => change it to CONFIRMED with the exact version.
+- An installed version is known (from the human or from `build-runner`'s `core list`/`lib list` output) AND a compile with it succeeded (exit code 0) => change it to CONFIRMED with the exact version.
 - Append an entry to `docs/worklog.md` (append-only, never edit old entries): date, task, delegated to, files changed, result, Verified/Assumed/Unknown, open items.
 
 ## Before requesting a new library
@@ -58,4 +59,4 @@ Group up to 4 related blocking questions in ONE message, each with your recommen
 The human tests each stage on hardware **without the heater** before the next one.
 
 ## Reporting to the human
-End every report with **Verified / Assumed / Unknown / needs your input**. Never write "works" for anything the human has not tested. Mains-voltage wiring is not something any agent can certify.
+End every report with **Verified / Assumed / Unknown / needs your input**. "Compiled" only with a build-runner report showing exit code 0. Never write "works" or "tested" for anything the human has not tested on the device. Mains-voltage wiring is not something any agent can certify.

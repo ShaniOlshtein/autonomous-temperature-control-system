@@ -52,7 +52,7 @@ generic display configuration.
 Install the ESP32 board package and the three libraries above using the IDE's
 Boards Manager and Library Manager. Select the LilyGo T-Display S3 compatible
 ESP32-S3 board and the connected serial port, then open
-`cooking_temperature_control.ino` and use Verify or Upload.
+`cooking_temperature_control/cooking_temperature_control.ino` and use Verify or Upload.
 
 ### Arduino CLI
 
@@ -67,20 +67,20 @@ arduino-cli board listall "LilyGo T-Display S3"
 Then compile with the exact FQBN reported for the selected board:
 
 ```powershell
-arduino-cli compile --fqbn <ESP32_S3_FQBN> .
+arduino-cli compile --fqbn <ESP32_S3_FQBN> cooking_temperature_control
 ```
 
 Upload only after confirming the connected port:
 
 ```powershell
-arduino-cli upload -p <PORT> --fqbn <ESP32_S3_FQBN> .
+arduino-cli upload -p <PORT> --fqbn <ESP32_S3_FQBN> cooking_temperature_control
 ```
 
 The CLI does not automatically use the board and port currently selected in
 the Arduino IDE, so both values must be verified explicitly.
 
 ## Configuration
-Open `cooking_temperature_control.ino` and modify these variables as needed:
+Open `cooking_temperature_control/cooking_temperature_control.ino` and modify these variables as needed:
 - `remainingSeconds` — initial countdown time in seconds
 - `targetTemp` — desired target temperature (float)
 - `currentTemp` — current measured temperature (float)
