@@ -70,6 +70,19 @@ From qa-safety, 2026-11-22 (APPROVED FOR COMPILE AND BENCH TEST). Heater disconn
 7. Unplug one DS18B20, then both: DISCONNECTED shown, no freeze.
 8. Power cycle and RST: same normal boot each time.
 
+## fix/skip-hidden-timer-field — skip TIMER_VALUE while the timer is OFF (decision 38)
+From qa-safety, 2026-11-22 (APPROVED FOR COMPILE AND BENCH TEST). Heater disconnected.
+1. Boot: ON/OFF selected and blinking, timer OFF.
+2. Timer OFF, SW4 x3: target value -> HOT/COLD -> ON/OFF; every press moves the blink to a visible field.
+3. Timer OFF, SW1 x3: HOT/COLD -> target value -> ON/OFF.
+4. On ON/OFF press SW3 (timer ON). SW4 x4: timer value (mm:ss blinking) -> target -> HOT/COLD -> ON/OFF; SW1 x4 reverse.
+5. Timer ON, timer value selected: SW2/SW3 short and long presses change it as before.
+6. Back to ON/OFF, timer OFF, SW4 and SW1 skip the timer value again.
+7. Timer OFF: SW2/SW3 still change the target and toggle HOT/COLD.
+8. SW5 START/STOP as before (or note the hardware fault).
+9. Serial Monitor open and closed: no stall (decision 37 regression).
+10. Power cycle: back to step 1.
+
 ## Results log
 (The Lead adds the date, stage and what the human reported.)
 - 2026-11-18 — Stage 0: compile and upload OK; buttons not responding (first report).
@@ -77,3 +90,4 @@ From qa-safety, 2026-11-22 (APPROVED FOR COMPILE AND BENCH TEST). Heater disconn
 - 2026-11-22 — Toolchain upload (arduino-cli, COM13): human reports SW3 does not increase the value; it moves the selection forward (acts like a navigation key). Human says SW3 also did not work on 2026-11-19 (correction to the entry above). Pending: VCC of the ADKeyboard (3.3V or 5V) and ADC readings per button from Serial before any threshold change.
 - 2026-11-22 — Toolchain bench test (arduino-cli build, one DS18B20 connected): human reports everything passes except SW3 (pre-existing threshold bug, measured ADC 1702-1705 vs limit 1700; SW4 measured 2789-2793) and SW5 (pre-existing HARDWARE fault, human will fix; not a firmware task). Approved for commit, push and PR.
 - 2026-11-22 — fix/adkey-sw3-threshold (SW3 2250 + setTxTimeoutMs(0)): human reports it works very well now (no freeze, SW3 OK). Approved for commit and push. New issue reported: with the timer OFF, navigation still stops on the hidden timer-value field (one press does nothing).
+- 2026-11-22 — fix/skip-hidden-timer-field (decision 38): human reports it works very well. Approved for commit and push.
