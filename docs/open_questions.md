@@ -21,7 +21,6 @@ Answered questions move to `docs/decisions.md`. The Lead keeps this file current
 15. Approve `docs/ble_spec.md` (wire format; the UUIDs were generated randomly for this project).
 
 ## C. Environment and repo
-18. **TFT_eSPI setup lives outside the repo** (`libraries/arduino_853159/...`). Copy the two setup files into the repo or document the steps, so builds are reproducible. (Closes when `tft_setup/Setup206_LilyGo_T_Display_S3.h` is copied verbatim, `docs/plans/vscode_toolchain.md` step 4.)
 20. Git: base branch, remote and pull request policy (repo `ShaniOlshtein/autonomous-temperature-control-system`).
 21. Power: USB only, or battery too? (Battery uses GPIO4 monitoring and affects the backlight.)
 22. Display: temperatures with decimals (0.1 °C) or whole degrees (current)?
@@ -47,3 +46,13 @@ Found in `cooking_temperature_control.ino` (479 lines, `main` 43e3339). For each
 - E10. **Serial output volume**: ADC debug line every 250 ms and per-sensor lines every 2 s.
 - E11. **Rendering**: all three sprites are redrawn on every `loop()` pass with no rate limit, and `String` objects are built each pass (heap use).
 - E12. **Boot state**: cooking inactive and timer OFF at boot; there is no saved state (ties to question 8).
+
+## F. VS Code toolchain (plan `docs/plans/vscode_toolchain.md`) — open on 2026-11-19
+- F1. Approve fix bundle A-D from the qa-safety review (settings.json rules, settings.local.json `git push *`, git-release docs-only check, wording).
+- F2. Arduino IDE program-size lines for the same commit (compare with arduino-cli: 365286 bytes, 27%; globals 28360 bytes, 8%).
+- F3. Keep `tools/build.ps1` without `-v` (no "Used library" table; versions from `core list`/`lib list`)? Lead recommends yes.
+- F4. Is GitHub branch protection enabled on `main`?
+
+## G. Buttons — open on 2026-11-22
+- G1. SW5 does not work: human says it is a hardware fault that existed before; she will fix it. After the fix, measure its ADC value (Serial `ADC=...`) to check the SW5 range 3001-3400.
+- G2. ADC values of SW1, SW2 and "no button" were never measured on this board (only SW3 1702-1705 and SW4 2789-2793 on 2026-11-22, SW4 about 2664 earlier).

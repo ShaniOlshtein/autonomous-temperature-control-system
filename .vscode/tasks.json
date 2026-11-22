@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build (compile only)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\tools\\build.ps1"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": { "base": "$gcc", "fileLocation": ["autoDetect", "${workspaceFolder}/cooking_temperature_control"] },
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+    },
+    {
+      "label": "Upload (HUMAN ONLY - run 'arduino-cli board list' first)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\tools\\upload.ps1", "-Port", "${input:uploadPort}"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true, "focus": true }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "uploadPort",
+      "type": "promptString",
+      "description": "Upload port confirmed from 'arduino-cli board list' (e.g. COM11). No default on purpose (decision 32)."
+    }
+  ]
+}

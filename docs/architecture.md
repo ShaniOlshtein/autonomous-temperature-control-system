@@ -11,6 +11,8 @@
 ```
 
 ## Modules and owners
+All module files (`.ino`, `.cpp`, `.h`) live in the sketch folder `cooking_temperature_control/`.
+
 | Module | Owner | Responsibility | Stage |
 |---|---|---|---|
 | `pins.h` | hardware-pins | GPIO names | 0 |

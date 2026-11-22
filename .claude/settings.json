@@ -4,7 +4,26 @@
       "Bash(git push --force*)",
       "Bash(git push -f*)",
       "Bash(git push origin main*)",
-      "Bash(git push origin master*)"
+      "Bash(git push origin master*)",
+      "Bash(arduino-cli core install*)",
+      "Bash(arduino-cli core upgrade*)",
+      "Bash(arduino-cli core uninstall*)",
+      "Bash(arduino-cli lib install*)",
+      "Bash(arduino-cli lib upgrade*)",
+      "Bash(arduino-cli lib uninstall*)",
+      "Bash(arduino-cli upgrade*)",
+      "Bash(arduino-cli config init*)",
+      "Bash(arduino-cli config set*)",
+      "Bash(arduino-cli config add*)",
+      "Bash(arduino-cli config remove*)",
+      "Bash(arduino-cli burn-bootloader*)",
+      "Bash(*esptool*)"
+    ],
+    "ask": [
+      "Bash(arduino-cli upload*)",
+      "Bash(arduino-cli compile *-u*)",
+      "Bash(*upload*)",
+      "Bash(arduino-cli monitor*)"
     ]
   }
 }
