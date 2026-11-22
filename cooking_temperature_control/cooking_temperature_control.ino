@@ -19,6 +19,7 @@
 void setup()
 {
   Serial.begin(115200);
+  Serial.setTxTimeoutMs(0);  // G3: never block loop() on USB-CDC writes when no host reads the port (decision 37)
   displayUiBacklightOn();
   inputInit();
   sensorsInit();

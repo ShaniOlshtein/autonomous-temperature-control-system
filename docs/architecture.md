@@ -41,3 +41,6 @@ All module files (`.ino`, `.cpp`, `.h`) live in the sketch folder `cooking_tempe
 3. BLE service.
 4. Display update.
 5. Phone app (later, separate decision).
+
+## Serial (USB-CDC) rule
+`setup()` sets `Serial.setTxTimeoutMs(0)` (decision 37): Serial writes never block `loop()`; output may be dropped when no host reads. Do not call `Serial.flush()`: with timeout 0 it discards pending output (core 3.3.11 `HWCDC.cpp` flush). Print only from the loop task; with timeout 0 a write from a second task can be dropped when the TX lock is held.

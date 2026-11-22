@@ -170,3 +170,19 @@ Entry format:
 - Result: bench test passes except SW3 (ADC 1702-1705 falls just above the 1700 SW3 limit, decoded as SW4; SW4 reads 2789-2793) and SW5 (hardware fault, human fixes). Both existed before the toolchain change
 - Verified / Assumed / Unknown: Verified: human-reported Serial lines. Unknown: SW1, SW2, SW5, no-button ADC values on this board
 - Open items: commit/push/PR chore/vscode-toolchain; then fix/adkey-sw3-threshold (decision 36); F1-F4, G1-G2
+
+## 2026-11-22 — fix/adkey-sw3-threshold: SW3/SW4 boundary 1700 -> 2250 (decision 36)
+- Requested by: human
+- Delegated to: git-release (commit 95bb641 + push of chore/vscode-toolchain; PR not opened: gh not installed, human opens it in the browser; new branch fix/adkey-sw3-threshold from 95bb641), display-ui (input.cpp), build-runner (compile, board list, upload), qa-safety (review), hardware-pins (docs/hardware.md)
+- Files changed: cooking_temperature_control/input.cpp (lines 55, 57), docs/hardware.md (line 51), README.md (ranges), docs/test_plan.md (checklist), docs/worklog.md
+- Result: Compiled, exit code 0: "Sketch uses 365290 bytes (27%) ... Maximum is 1310720 bytes." "Global variables use 28360 bytes (8%) ... Maximum is 327680 bytes." No errors, no project-file warnings. qa-safety: APPROVED FOR COMPILE AND BENCH TEST (non-blocking: SW4/SW5 margin about 207; stale SW4 comment at input.cpp:61). Upload to COM13 (human approved) exit code 0, hash verified
+- Verified / Assumed / Unknown: Verified: compile and upload outputs. Unknown: bench test of SW3 (human). Note: the toolchain commit trailer says Claude Haiku 5.5 (git-release model), left as is (amend would need a force push)
+- Open items: human bench test; then commit + push fix/adkey-sw3-threshold; human opens the PRs; G1, G2
+
+## 2026-11-22 — fix/adkey-sw3-threshold: USB-CDC stall fix (decision 37, G3)
+- Requested by: human
+- Delegated to: control-logic (.ino line 22 `Serial.setTxTimeoutMs(0);`), build-runner (compile, board list, upload), qa-safety (review)
+- Files changed: cooking_temperature_control/cooking_temperature_control.ino, docs/architecture.md (Serial rule: no Serial.flush(), print from loop task only), docs/test_plan.md (checklist), docs/decisions.md (37), docs/open_questions.md (G3), docs/worklog.md
+- Result: Compiled, exit code 0: "Sketch uses 365310 bytes (27%) ... Maximum is 1310720 bytes." "Global variables use 28360 bytes (8%) ... Maximum is 327680 bytes." No errors/warnings. qa-safety APPROVED FOR COMPILE AND BENCH TEST (non-blocking: Serial.flush trap, multi-task writes, stale ".ino Stage 0" comment). Upload COM13 (human approved) exit code 0, hash verified, no manual BOOT/RST
+- Verified / Assumed / Unknown: Verified: compile/upload output; core 3.3.11 HWCDC write() waits up to 20 x tx_timeout_ms per write (read by Lead and qa-safety). Unknown: whether the freeze is gone (human bench test)
+- Open items: human bench test (both checklists of this branch); then commit + push; PRs opened by the human (gh not installed)

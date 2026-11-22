@@ -52,9 +52,9 @@ static int readAdKey()
   {
     return 2; // SW2: approximately 2 kohms
   }
-  if (adcValue <= 1700)
+  if (adcValue <= 2250)
   {
-    return 3; // SW3: approximately 5.1 kohms
+    return 3; // SW3: measured approximately 1703 (2026-11-22)
   }
   if (adcValue <= 3000)
   {
